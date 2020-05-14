@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace AnimatedGifRecorder.Encoders
         /// <param name="filePath"></param>
         public static void Encode(List<FrameInfo> frames, string filePath)
         {
-            FileStream stream = new FileStream(filePath, FileMode.Create);
+            FileStream fileOut = new FileStream(filePath, FileMode.Create);
             GifBitmapEncoder encoder = new GifBitmapEncoder();
             
             foreach(var frame in frames)
@@ -33,7 +34,9 @@ namespace AnimatedGifRecorder.Encoders
 
                 encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
             }
-            encoder.Save(stream);
+
+            encoder.Save(fileOut);
+            Debug.WriteLine($"File successfully saved at {filePath}");
         }
     }
 }
