@@ -84,6 +84,11 @@ namespace AnimatedGifRecorder
 
         public void Start()
         {
+            if (!_stopped && !_recording)
+            {
+                _recording = true;
+            }
+
             //Spin up a Task to consume the BlockingCollection.
             Task.Run(() =>
             {
@@ -104,20 +109,27 @@ namespace AnimatedGifRecorder
 
             Task.Run(async () =>
             {
-                await Task.Delay(Interval);
-                Capture();
+                while(true)
+                {
+                    if (_recording)
+                    {
+                        Capture();
+                    }
+                    if (_stopped) return;
+                    await Task.Delay(Interval);
+                }
             });
         }
 
 
         public void Stop()
         {
-
+            _stopped = true;
         }
 
         public void Pause()
         {
-
+            _recording = false;
         }
 
         /// <summary>
@@ -342,6 +354,7 @@ namespace AnimatedGifRecorder
         /// </summary>
         protected BlockingCollection<FrameInfo> BlockingCollection { get; private set; } = new BlockingCollection<FrameInfo>();
 
-        private Task _recordingTask;
+        private bool _recording;
+        private bool _stopped;
     }
 }
