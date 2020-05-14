@@ -335,7 +335,7 @@ namespace AnimatedGifRecorder
         private int _trueBottom => _conf.Y + _offsetTop + _conf.Height;
         private int _interval => (int)(1000 / _conf.FrameRate);
 
-        private string _filename => $"{System.IO.Path.GetTempPath()}\\test";
+        private string _filename => $"{System.IO.Path.GetTempPath()}test{DateTime.Now:yyyy-MM-dd}";
 
         /// <summary>
         /// Frames in recording. 

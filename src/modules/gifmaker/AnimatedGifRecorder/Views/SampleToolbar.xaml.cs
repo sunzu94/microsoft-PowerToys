@@ -30,7 +30,6 @@ namespace AnimatedGifRecorder.Views
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
         {
-            Cursor = Cursors.Cross;
             RecordPauseButton.IsEnabled = true;
             StopButton.IsEnabled = false;
             if (RecordPauseText.Text == "Pause")
@@ -44,7 +43,6 @@ namespace AnimatedGifRecorder.Views
         {
             if (RecordPauseText.Text == "Record")
             {
-                Cursor = Cursors.Arrow;
                 ImageUri = imagePause;
                 RecordPauseText.Text = "Pause";
                 StopButton.IsEnabled = true;
@@ -53,7 +51,6 @@ namespace AnimatedGifRecorder.Views
             {
                 ImageUri = imageRecord;
                 RecordPauseText.Text = "Record";
-                recorder.Pause();
             }
         }
 
@@ -66,7 +63,6 @@ namespace AnimatedGifRecorder.Views
                 ImageUri = imageRecord;
                 RecordPauseText.Text = "Record";
             }
-            recorder.Stop();
         }
     }
 }
