@@ -8,9 +8,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Canvas Name="Area"
-                MouseDown="MainCanvas_MouseDown"
-                MouseMove="MainCanvas_MouseMove"
-                MouseUp="MainCanvas_MouseUp">
+                MouseLeftButtonDown="Area_MouseLeftButtonDown"
+                MouseMove="Area_MouseMove"
+                MouseLeftButtonUp="Area_MouseLeftButtonUp">
             <Canvas.Background>
                 <SolidColorBrush Opacity="0.5" Color="Black"/>
             </Canvas.Background>
