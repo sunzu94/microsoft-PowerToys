@@ -20,6 +20,8 @@ namespace AnimatedGifRecorder.Views
     /// </summary>
     public partial class SampleToolbar : UserControl
     {
+        Recorder recorder;
+
         public SampleToolbar()
         {
             InitializeComponent();
@@ -35,6 +37,7 @@ namespace AnimatedGifRecorder.Views
                 // RecordPauseButton.Template.FindName("RecordPauseImage", RecordPauseButton).SetValue(Image.SourceProperty, new BitmapImage(new Uri(@"media-record-8x.png", UriKind.Relative)));
                 RecordPauseButton.Tag = "Record";
             }
+            recorder = new Recorder(new RecorderConf() { Width = 800, Height = 600, X = 50, Y=50, FrameRate = 10});
         }
 
         private void RecordPauseButton_Click(object sender, RoutedEventArgs e)
@@ -44,11 +47,13 @@ namespace AnimatedGifRecorder.Views
                 // RecordPauseButton.Icon = new SymbolIcon(Symbol.Pause);
                 RecordPauseButton.Tag = "Pause";
                 StopButton.IsEnabled = true;
+                recorder.Start();
             }
             else
             {
                 // RecordPauseButton.Icon = new SymbolIcon(Symbol.Target);
                 RecordPauseButton.Tag = "Record";
+                recorder.Pause();
             }
         }
 
@@ -61,6 +66,7 @@ namespace AnimatedGifRecorder.Views
                 // RecordPauseButton.Icon = new SymbolIcon(Symbol.Target);
                 RecordPauseButton.Tag = "record";
             }
+            recorder.Stop();
         }
     }
 }
