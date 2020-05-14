@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Deployment.Internal;
@@ -81,8 +82,25 @@ namespace AnimatedGifRecorder
 
         public void Start()
         {
-
+            //Spin up a Task to consume the BlockingCollection.
+            Task.Run(() =>
+            {
+                try
+                {
+                    while (true)
+                        Save(BlockingCollection.Take());
+                }
+                catch (InvalidOperationException)
+                {
+                    //It means that Take() was called on a completed collection.
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Exception: {e.Message}");
+                }
+            });
         }
+
 
         public void Stop()
         {
@@ -92,6 +110,57 @@ namespace AnimatedGifRecorder
         public void Pause()
         {
 
+        }
+
+        /// <summary>
+        /// Get the correct Output1 based on region to be captured.
+        /// TODO: Get the correct output when the user moves the capture region to other screen.
+        /// TODO: Capture multiple screens at the same time.
+        /// </summary>
+        private Output1 GetOutput(Factory1 factory)
+        {
+            try
+            {
+                //Gets the output with the bigger area being intersected.
+                var output = factory.Adapters1.SelectMany(s => s.Outputs).OrderByDescending(f =>
+                {
+                    var x = Math.Max(Conf.X, f.Description.DesktopBounds.Left);
+                    var num1 = Math.Min(Conf.X + Conf.Width, f.Description.DesktopBounds.Right);
+                    var y = Math.Max(Conf.Y, f.Description.DesktopBounds.Top);
+                    var num2 = Math.Min(Conf.Y + Conf.Height, f.Description.DesktopBounds.Bottom);
+
+                    if (num1 >= x && num2 >= y)
+                        return num1 - x + num2 - y;
+
+                    return 0;
+                }).FirstOrDefault();
+
+                if (output == null)
+                    throw new Exception($"Could not find a proper output device for the area of L: {Conf.X}, T: {Conf.Y}, Width: {Conf.Width}, Height: {Conf.Height}.");
+
+                //Position adjustments, so the correct region is captured.
+                OffsetLeft = output.Description.DesktopBounds.Left;
+                OffsetTop = output.Description.DesktopBounds.Top;
+
+                return output.QueryInterface<Output1>();
+            }
+            catch (SharpDXException ex)
+            {
+                throw new Exception("Could not find the specified output device.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Saves frame into separate file images;
+        /// </summary>
+        /// <param name="frameInfo"></param>
+        private void Save(FrameInfo frame)
+        {
+            frame.Image?.Save(frame.Path);
+            frame.Image?.Dispose();
+            frame.Image = null;
+
+            Frames.Add(frame);
         }
 
         private int Capture(FrameInfo frame)
@@ -122,9 +191,6 @@ namespace AnimatedGifRecorder
 
                 if (data.IsEmpty)
                 {
-                    //frame.WasDropped = true;
-                    //BlockingCollection.Add(frame);
-
                     Device.ImmediateContext.UnmapSubresource(StagingTexture, 0);
                     resource.Dispose();
                     return FrameCount;
@@ -256,47 +322,15 @@ namespace AnimatedGifRecorder
         public int FrameCount { get; set; }
 
         /// <summary>
+        /// Collection of frame metadata in the current session
+        /// </summary>
+        protected internal List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
+
+        /// <summary>
         /// Frames in recording. 
         /// Using BlockingCollection for multithreaded saving.
         /// </summary>
         protected BlockingCollection<FrameInfo> BlockingCollection { get; private set; } = new BlockingCollection<FrameInfo>();
 
-        /// <summary>
-        /// Get the correct Output1 based on region to be captured.
-        /// TODO: Get the correct output when the user moves the capture region to other screen.
-        /// TODO: Capture multiple screens at the same time.
-        /// </summary>
-        private Output1 GetOutput(Factory1 factory)
-        {
-            try
-            {
-                //Gets the output with the bigger area being intersected.
-                var output = factory.Adapters1.SelectMany(s => s.Outputs).OrderByDescending(f =>
-                {
-                    var x = Math.Max(Conf.X, f.Description.DesktopBounds.Left);
-                    var num1 = Math.Min(Conf.X + Conf.Width, f.Description.DesktopBounds.Right);
-                    var y = Math.Max(Conf.Y, f.Description.DesktopBounds.Top);
-                    var num2 = Math.Min(Conf.Y + Conf.Height, f.Description.DesktopBounds.Bottom);
-
-                    if (num1 >= x && num2 >= y)
-                        return num1 - x + num2 - y;
-
-                    return 0;
-                }).FirstOrDefault();
-
-                if (output == null)
-                    throw new Exception($"Could not find a proper output device for the area of L: {Conf.X}, T: {Conf.Y}, Width: {Conf.Width}, Height: {Conf.Height}.");
-
-                //Position adjustments, so the correct region is captured.
-                OffsetLeft = output.Description.DesktopBounds.Left;
-                OffsetTop = output.Description.DesktopBounds.Top;
-
-                return output.QueryInterface<Output1>();
-            }
-            catch (SharpDXException ex)
-            {
-                throw new Exception("Could not find the specified output device.", ex);
-            }
-        }
     }
 }
