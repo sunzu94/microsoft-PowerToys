@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace AnimatedGifRecorder.Controls
@@ -16,6 +17,17 @@ namespace AnimatedGifRecorder.Controls
     class ResizableRectangle : Canvas
     {
         private Point point1, point2;
+
+        public Point Point1
+        {
+            get => point1;
+        }
+
+        public Point Point2
+        {
+            get => point2;
+        }
+
         private readonly Rectangle FillRectangle;
         
         public ResizableRectangle(Point startPoint)
@@ -27,7 +39,8 @@ namespace AnimatedGifRecorder.Controls
                 Stroke = new SolidColorBrush(Colors.White),
                 Fill = new SolidColorBrush(Colors.White),
                 Opacity = .5,
-                Visibility = Visibility.Visible
+                Visibility = Visibility.Visible,
+                Name = "MyRectangle"
             };
             Children.Add(FillRectangle);
         }

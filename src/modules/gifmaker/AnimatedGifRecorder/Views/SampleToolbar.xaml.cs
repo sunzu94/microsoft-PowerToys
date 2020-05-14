@@ -9,7 +9,6 @@ namespace AnimatedGifRecorder.Views
     /// </summary>
     public partial class SampleToolbar : UserControl
     {
-        Recorder recorder;
 
         public SampleToolbar()
         {
@@ -39,7 +38,6 @@ namespace AnimatedGifRecorder.Views
                 ImageUri = imageRecord;
                 RecordPauseText.Text = "Record";
             }
-            recorder = new Recorder(new RecorderConf() { Width = 800, Height = 600, X = 50, Y=50, FrameRate = 10});
         }
 
         private void RecordPauseButton_Click(object sender, RoutedEventArgs e)
@@ -50,7 +48,6 @@ namespace AnimatedGifRecorder.Views
                 ImageUri = imagePause;
                 RecordPauseText.Text = "Pause";
                 StopButton.IsEnabled = true;
-                recorder.Start();
             }
             else
             {

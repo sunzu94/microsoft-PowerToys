@@ -29,6 +29,10 @@ namespace AnimatedGifRecorder.Views
         }
 
         private ResizableRectangle rect;
+
+        public Point GetFirstPoint() => rect.Point1;
+        public Point GetSecondPoint() => rect.Point2;
+
         private void Area_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             try

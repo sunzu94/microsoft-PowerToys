@@ -13,7 +13,9 @@
     <Grid>
         <views:SampleToolbar HorizontalAlignment="Center"
                              VerticalAlignment="Top"
-                             Panel.ZIndex="2"/>
-        <views:RecordArea Panel.ZIndex="1"/>
+                             Panel.ZIndex="2"
+                             x:Name="ToolbarElement"/>
+        <views:RecordArea Panel.ZIndex="1"
+                          x:Name="RecordAreaElement"/>
     </Grid>
 </Window>
