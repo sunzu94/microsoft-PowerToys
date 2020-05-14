@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,5 +23,10 @@ namespace AnimatedGifRecorder
         /// Path to bitmap
         /// </summary>
         public string Path;
+
+        /// <summary>
+        /// Bitmap image
+        /// </summary>
+        public Image Image;
     }
 }
