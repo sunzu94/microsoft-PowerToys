@@ -192,6 +192,7 @@ namespace AnimatedGifRecorder
             frame.Image?.Save(frame.Path);
             frame.Image?.Dispose();
             frame.Image = null;
+            Debug.WriteLine($"File saved in {frame.Path}");
 
             Frames.Add(frame);
         }
@@ -254,7 +255,7 @@ namespace AnimatedGifRecorder
                 bitmap.UnlockBits(mapDest);
 
                 //Set frame details.
-                frame.Path = $"{System.IO.Path.GetTempPath()}/test_{FrameCount++}";
+                frame.Path = $"{System.IO.Path.GetTempPath()}\\test_{FrameCount++}.png";
                 frame.Delay = _interval;
                 frame.Image = bitmap;
                 BlockingCollection.Add(frame);
