@@ -27,21 +27,34 @@ namespace AnimatedGifRecorder
     /// </summary>
     public class Recorder
     {
+        /// <summary>
+        /// Number of frames recorded
+        /// </summary>
+        public int FrameCount { get; set; }
+
+        /// <summary>
+        /// Collection of frame metadata in the current session
+        /// </summary>
+        public List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
+
+
         public Recorder(RecorderConf conf)
         {
-            Device = new Device(DriverType.Hardware, DeviceCreationFlags.VideoSupport);
+            _conf = conf;
 
-            using (var multiThread = Device.QueryInterface<Multithread>())
+            _device = new Device(DriverType.Hardware, DeviceCreationFlags.VideoSupport);
+
+            using (var multiThread = _device.QueryInterface<Multithread>())
                 multiThread.SetMultithreadProtected(true);
 
             //Texture used to copy contents from the GPU to be accesible by the CPU.
-            StagingTexture = new Texture2D(Device, new Texture2DDescription
+            _stagingTexture = new Texture2D(_device, new Texture2DDescription
             {
                 ArraySize = 1,
                 BindFlags = BindFlags.None,
                 CpuAccessFlags = CpuAccessFlags.Read,
                 Format = Format.B8G8R8A8_UNorm,
-                Width = Conf.Width,
+                Width = _conf.Width,
                 Height = conf.Height,
                 OptionFlags = ResourceOptionFlags.None,
                 MipLevels = 1,
@@ -57,7 +70,7 @@ namespace AnimatedGifRecorder
                     try
                     {
                         //Make sure to run with the integrated graphics adapter if using a Microsoft hybrid system. https://stackoverflow.com/a/54196789/1735672
-                        DuplicatedOutput = output1.DuplicateOutput(Device);
+                        _duplicatedOutput = output1.DuplicateOutput(_device);
                     }
                     catch (SharpDXException e) when (e.Descriptor == SharpDX.DXGI.ResultCode.NotCurrentlyAvailable)
                     {
@@ -116,7 +129,7 @@ namespace AnimatedGifRecorder
                         Capture();
                     }
                     if (_stopped) return;
-                    await Task.Delay(Interval);
+                    await Task.Delay(_interval);
                 }
             });
         }
@@ -144,10 +157,10 @@ namespace AnimatedGifRecorder
                 //Gets the output with the bigger area being intersected.
                 var output = factory.Adapters1.SelectMany(s => s.Outputs).OrderByDescending(f =>
                 {
-                    var x = Math.Max(Conf.X, f.Description.DesktopBounds.Left);
-                    var num1 = Math.Min(Conf.X + Conf.Width, f.Description.DesktopBounds.Right);
-                    var y = Math.Max(Conf.Y, f.Description.DesktopBounds.Top);
-                    var num2 = Math.Min(Conf.Y + Conf.Height, f.Description.DesktopBounds.Bottom);
+                    var x = Math.Max(_conf.X, f.Description.DesktopBounds.Left);
+                    var num1 = Math.Min(_conf.X + _conf.Width, f.Description.DesktopBounds.Right);
+                    var y = Math.Max(_conf.Y, f.Description.DesktopBounds.Top);
+                    var num2 = Math.Min(_conf.Y + _conf.Height, f.Description.DesktopBounds.Bottom);
 
                     if (num1 >= x && num2 >= y)
                         return num1 - x + num2 - y;
@@ -156,11 +169,11 @@ namespace AnimatedGifRecorder
                 }).FirstOrDefault();
 
                 if (output == null)
-                    throw new Exception($"Could not find a proper output device for the area of L: {Conf.X}, T: {Conf.Y}, Width: {Conf.Width}, Height: {Conf.Height}.");
+                    throw new Exception($"Could not find a proper output device for the area of L: {_conf.X}, T: {_conf.Y}, Width: {_conf.Width}, Height: {_conf.Height}.");
 
                 //Position adjustments, so the correct region is captured.
-                OffsetLeft = output.Description.DesktopBounds.Left;
-                OffsetTop = output.Description.DesktopBounds.Top;
+                _offsetLeft = output.Description.DesktopBounds.Left;
+                _offsetTop = output.Description.DesktopBounds.Top;
 
                 return output.QueryInterface<Output1>();
             }
@@ -191,7 +204,7 @@ namespace AnimatedGifRecorder
             try
             {
                 //Try to get the duplicated output frame within given time.
-                res = DuplicatedOutput.TryAcquireNextFrame(0, out var info, out var resource);
+                res = _duplicatedOutput.TryAcquireNextFrame(0, out var info, out var resource);
 
                 //Somehow, it was not possible to retrieve the resource or any frame.
                 if (res.Failure || resource == null || info.AccumulatedFrames == 0)
@@ -204,33 +217,33 @@ namespace AnimatedGifRecorder
                 using (var screenTexture = resource.QueryInterface<Texture2D>())
                 {
                     //Copies from the screen texture only the area which the user wants to capture.
-                    Device.ImmediateContext.CopySubresourceRegion(screenTexture, 0, new ResourceRegion(TrueLeft, TrueTop, 0, TrueRight, TrueBottom, 1), StagingTexture, 0);
+                    _device.ImmediateContext.CopySubresourceRegion(screenTexture, 0, new ResourceRegion(_trueLeft, _trueTop, 0, _trueRight, _trueBottom, 1), _stagingTexture, 0);
                 }
 
                 //Get the desktop capture texture.
-                var data = Device.ImmediateContext.MapSubresource(StagingTexture, 0, MapMode.Read, MapFlags.None);
+                var data = _device.ImmediateContext.MapSubresource(_stagingTexture, 0, MapMode.Read, MapFlags.None);
 
                 if (data.IsEmpty)
                 {
-                    Device.ImmediateContext.UnmapSubresource(StagingTexture, 0);
+                    _device.ImmediateContext.UnmapSubresource(_stagingTexture, 0);
                     resource.Dispose();
                     return FrameCount;
                 }
 
                 #region Get image data
 
-                var bitmap = new System.Drawing.Bitmap(Conf.Width, Conf.Height, PixelFormat.Format32bppArgb);
-                var boundsRect = new System.Drawing.Rectangle(0, 0, Conf.Width, Conf.Height);
+                var bitmap = new System.Drawing.Bitmap(_conf.Width, _conf.Height, PixelFormat.Format32bppArgb);
+                var boundsRect = new System.Drawing.Rectangle(0, 0, _conf.Width, _conf.Height);
 
                 //Copy pixels from screen capture Texture to the GDI bitmap.
                 var mapDest = bitmap.LockBits(boundsRect, ImageLockMode.WriteOnly, bitmap.PixelFormat);
                 var sourcePtr = data.DataPointer;
                 var destPtr = mapDest.Scan0;
 
-                for (var y = 0; y < Conf.Height; y++)
+                for (var y = 0; y < _conf.Height; y++)
                 {
                     //Copy a single line.
-                    Utilities.CopyMemory(destPtr, sourcePtr, Conf.Width * 4);
+                    Utilities.CopyMemory(destPtr, sourcePtr, _conf.Width * 4);
 
                     //Advance pointers.
                     sourcePtr = IntPtr.Add(sourcePtr, data.RowPitch);
@@ -242,13 +255,13 @@ namespace AnimatedGifRecorder
 
                 //Set frame details.
                 frame.Path = $"{System.IO.Path.GetTempPath()}/test_{FrameCount++}";
-                frame.Delay = Interval;
+                frame.Delay = _interval;
                 frame.Image = bitmap;
                 BlockingCollection.Add(frame);
 
                 #endregion
 
-                Device.ImmediateContext.UnmapSubresource(StagingTexture, 0);
+                _device.ImmediateContext.UnmapSubresource(_stagingTexture, 0);
 
                 resource.Dispose();
                 return FrameCount;
@@ -274,7 +287,7 @@ namespace AnimatedGifRecorder
                 {
                     //Only release the frame if there was a sucess in capturing it.
                     if (res.Success)
-                        DuplicatedOutput.ReleaseFrame();
+                        _duplicatedOutput.ReleaseFrame();
                 }
                 catch (Exception e)
                 {
@@ -288,73 +301,40 @@ namespace AnimatedGifRecorder
         /// <summary>
         /// The current device being duplicated.
         /// </summary>
-        private Device Device;
+        private Device _device;
 
         /// <summary>
         /// The desktop duplication interface.
         /// </summary>
-        private OutputDuplication DuplicatedOutput;
+        private OutputDuplication _duplicatedOutput;
 
         /// <summary>
         /// The texture used to copy the pixel data from the desktop to the destination image. 
         /// </summary>
-        private Texture2D StagingTexture;
-
-        /// <summary>
-        /// Texture used to merge the cursor with the background image (desktop).
-        /// </summary>
-        private Texture2D CursorStagingTexture;
-
-        /// <summary>
-        /// The buffer that holds all pixel data of the cursor.
-        /// </summary>
-        private byte[] CursorShapeBuffer;
-
-        /// <summary>
-        /// The details of the cursor.
-        /// </summary>
-        private OutputDuplicatePointerShapeInformation CursorShapeInfo;
-
-        /// <summary>
-        /// The previous position of the mouse cursor.
-        /// </summary>
-        private OutputDuplicatePointerPosition PreviousPosition;
+        private Texture2D _stagingTexture;
 
         /// <summary>
         /// Summary current recording session configurations
         /// </summary>
-        private RecorderConf Conf;
+        private RecorderConf _conf;
 
-        private int OffsetLeft { get; set; }
-        private int OffsetTop { get; set; }
-        private int TrueLeft => Conf.X + OffsetLeft;
-        private int TrueRight => Conf.X + OffsetLeft + Conf.Width;
-        private int TrueTop => Conf.Y + OffsetTop;
-        private int TrueBottom => Conf.Y + OffsetTop + Conf.Height;
-        private int Interval => (int)(1000 / Conf.FrameRate);
-
-        /// <summary>
-        /// The latest time in which a frame or metadata was captured.
-        /// </summary>
-        private long LastProcessTime = 0;
-
-        /// <summary>
-        /// Number of frames recorded
-        /// </summary>
-        public int FrameCount { get; set; }
-
-        /// <summary>
-        /// Collection of frame metadata in the current session
-        /// </summary>
-        public List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
+        private int _offsetLeft { get; set; }
+        private int _offsetTop { get; set; }
+        private int _trueLeft => _conf.X + _offsetLeft;
+        private int _trueRight => _conf.X + _offsetLeft + _conf.Width;
+        private int _trueTop => _conf.Y + _offsetTop;
+        private int _trueBottom => _conf.Y + _offsetTop + _conf.Height;
+        private int _interval => (int)(1000 / _conf.FrameRate);
 
         /// <summary>
         /// Frames in recording. 
         /// Using BlockingCollection for multithreaded saving.
         /// </summary>
-        protected BlockingCollection<FrameInfo> BlockingCollection { get; private set; } = new BlockingCollection<FrameInfo>();
+        private BlockingCollection<FrameInfo> BlockingCollection { get; private set; } = new BlockingCollection<FrameInfo>();
 
+        #region states
         private bool _recording;
         private bool _stopped;
+        #region
     }
 }
