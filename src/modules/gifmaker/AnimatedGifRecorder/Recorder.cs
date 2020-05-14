@@ -42,6 +42,8 @@ namespace AnimatedGifRecorder
         public Recorder(RecorderConf conf)
         {
             _conf = conf;
+            _blockingCollection = new BlockingCollection<FrameInfo>();
+            _tasks = new List<Task>();
 
             _device = new Device(DriverType.Hardware, DeviceCreationFlags.VideoSupport);
 
@@ -104,12 +106,15 @@ namespace AnimatedGifRecorder
             }
 
             //Spin up a Task to consume the BlockingCollection.
-            Task.Run(() =>
+            _tasks.Add(Task.Run(() =>
             {
                 try
                 {
                     while (true)
-                        Save(BlockingCollection.Take());
+                    {
+                        Save(_blockingCollection.Take());
+                        if (_stopped) return;
+                    }
                 }
                 catch (InvalidOperationException)
                 {
@@ -119,9 +124,9 @@ namespace AnimatedGifRecorder
                 {
                     Debug.WriteLine($"Exception: {e.Message}");
                 }
-            });
+            }));
 
-            Task.Run(async () =>
+            _tasks.Add(Task.Run(async () =>
             {
                 while(true)
                 {
@@ -132,13 +137,14 @@ namespace AnimatedGifRecorder
                     if (_stopped) return;
                     await Task.Delay(_interval);
                 }
-            });
+            }));
         }
 
 
         public void Stop()
         {
             _stopped = true;
+            _tasks.ForEach(task => task.Wait());
             GifEncoder.Encode(Frames, _filename + ".gif");
         }
 
@@ -260,7 +266,7 @@ namespace AnimatedGifRecorder
                 frame.Path = $"{_filename}_{FrameCount++}.png";
                 frame.Delay = _interval;
                 frame.Image = bitmap;
-                BlockingCollection.Add(frame);
+                _blockingCollection.Add(frame);
 
                 #endregion
 
@@ -335,11 +341,15 @@ namespace AnimatedGifRecorder
         /// Frames in recording. 
         /// Using BlockingCollection for multithreaded saving.
         /// </summary>
-        private BlockingCollection<FrameInfo> BlockingCollection = new BlockingCollection<FrameInfo>();
+        private BlockingCollection<FrameInfo> _blockingCollection = new BlockingCollection<FrameInfo>();
+
+        private List<Task> _tasks;
 
         #region states
+
         private bool _recording;
         private bool _stopped;
+        
         #endregion
     }
 }

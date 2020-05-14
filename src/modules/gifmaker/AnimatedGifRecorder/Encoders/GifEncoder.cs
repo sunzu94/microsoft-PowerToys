@@ -36,6 +36,7 @@ namespace AnimatedGifRecorder.Encoders
             }
 
             encoder.Save(fileOut);
+            fileOut.Close();
             Debug.WriteLine($"File successfully saved at {filePath}");
         }
     }
