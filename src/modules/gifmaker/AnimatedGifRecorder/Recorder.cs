@@ -69,6 +69,8 @@ namespace AnimatedGifRecorder
                     }
                 }
             }
+
+
         }
 
         /// <summary>
@@ -98,6 +100,12 @@ namespace AnimatedGifRecorder
                 {
                     Debug.WriteLine($"Exception: {e.Message}");
                 }
+            });
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(Interval);
+                Capture();
             });
         }
 
@@ -163,9 +171,10 @@ namespace AnimatedGifRecorder
             Frames.Add(frame);
         }
 
-        private int Capture(FrameInfo frame)
+        private int Capture()
         {
             var res = new Result(-1);
+            var frame = new FrameInfo();
 
             try
             {
@@ -221,7 +230,7 @@ namespace AnimatedGifRecorder
 
                 //Set frame details.
                 frame.Path = $"{System.IO.Path.GetTempPath()}/test_{FrameCount++}";
-                frame.Delay = (int)(1000 / Conf.FrameRate);
+                frame.Delay = Interval;
                 frame.Image = bitmap;
                 BlockingCollection.Add(frame);
 
@@ -310,6 +319,7 @@ namespace AnimatedGifRecorder
         protected internal int TrueRight => Conf.X + OffsetLeft + Conf.Width;
         protected internal int TrueTop => Conf.Y + OffsetTop;
         protected internal int TrueBottom => Conf.Y + OffsetTop + Conf.Height;
+        protected internal int Interval => (int)(1000 / Conf.FrameRate);
 
         /// <summary>
         /// The latest time in which a frame or metadata was captured.
@@ -332,5 +342,6 @@ namespace AnimatedGifRecorder
         /// </summary>
         protected BlockingCollection<FrameInfo> BlockingCollection { get; private set; } = new BlockingCollection<FrameInfo>();
 
+        private Task _recordingTask;
     }
 }
