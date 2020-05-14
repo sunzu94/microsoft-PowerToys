@@ -66,6 +66,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ResizableRectangle.cs" />
     <Compile Include="Encoders\GifEncoder.cs" />
     <Compile Include="FrameInfo.cs" />
     <Compile Include="Recorder.cs" />
@@ -150,8 +151,6 @@
     <Resource Include="Resources\media-stop.png" />
     <Content Include="Resources\media-stop.svg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
