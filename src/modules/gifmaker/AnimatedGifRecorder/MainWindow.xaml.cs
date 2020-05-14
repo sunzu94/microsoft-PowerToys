@@ -33,36 +33,45 @@ namespace AnimatedGifRecorder
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
+            RecordAreaElement.Recording = false;
             recorder.Stop();
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Cross;
-            var p1 = RecordAreaElement.GetFirstPoint();
-            var p2 = RecordAreaElement.GetSecondPoint();
-
-            var X = (int)Math.Min(p1.X, p2.X);
-            var Width = (int)Math.Max(p1.X, p2.X) - X;
-            var Y = (int)Math.Min(p1.Y, p2.Y);
-            var Height = (int)Math.Min(p1.Y, p2.Y) - Y;
-
-            recorder = new Recorder(new RecorderConf
-            {
-                X = X,
-                Y = Y,
-                Width = Width,
-                Height = Height,
-                FrameRate = 10
-            });
         }
 
         private void RecordPauseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ToolbarElement.RecordPauseText.Text == "Record")
+            
+            if (ToolbarElement.RecordPauseText.Text == "Pause")
             {
                 RecordAreaElement.IsEnabled = false;
+
+                var p1 = RecordAreaElement.GetFirstPoint();
+                var p2 = RecordAreaElement.GetSecondPoint();
+
+                var X = (int)Math.Min(p1.X, p2.X);
+                var Width = (int)Math.Max(p1.X, p2.X) - X;
+                var Y = (int)Math.Min(p1.Y, p2.Y);
+                var Height = (int)Math.Max(p1.Y, p2.Y) - Y;
+
+                recorder = new Recorder(new RecorderConf
+                {
+                    X = X,
+                    Y = Y,
+                    Width = Width,
+                    Height = Height,
+                    FrameRate = 10
+                });
+
+                RecordAreaElement.Recording = true;
                 recorder.Start();
+            } else
+            {
+                RecordAreaElement.Recording = false;
+                recorder.Pause();
             }
 
             Cursor = Cursors.Arrow;

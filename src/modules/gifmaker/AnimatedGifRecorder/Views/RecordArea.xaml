@@ -15,5 +15,19 @@
                 <SolidColorBrush Opacity="0.5" Color="Black"/>
             </Canvas.Background>
         </Canvas>
+        <Path Fill="Black" 
+              Opacity="0.5" 
+              x:Name="ExclusionPath">
+            <Path.Data>
+                <CombinedGeometry GeometryCombineMode="Exclude">
+                    <CombinedGeometry.Geometry1>
+                        <RectangleGeometry Rect="0,0,10000,10000"/>
+                    </CombinedGeometry.Geometry1>
+                    <CombinedGeometry.Geometry2>
+                        <RectangleGeometry x:Name="Exclusion"/>
+                    </CombinedGeometry.Geometry2>
+                </CombinedGeometry>
+            </Path.Data>
+        </Path>
     </Grid>
 </UserControl>

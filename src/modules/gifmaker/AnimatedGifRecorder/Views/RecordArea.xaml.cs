@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,10 +34,37 @@ namespace AnimatedGifRecorder.Views
         public Point GetFirstPoint() => rect.Point1;
         public Point GetSecondPoint() => rect.Point2;
 
+        public bool Recording
+        {
+            set 
+            {
+                recording = value;
+                UpdateUI();
+            }
+        }
+
+        private bool recording;
+        
+        private void UpdateUI()
+        {
+            if (!recording)
+            {
+                rect.Visibility = Visibility.Visible;
+                ExclusionPath.Visibility = Visibility.Collapsed;
+            } 
+            else
+            {
+                rect.Visibility = Visibility.Collapsed;
+                ExclusionPath.Visibility = Visibility.Visible;
+            }
+
+        }
+
         private void Area_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             try
             {
+                Exclusion.Rect = new Rect();
                 Area.CaptureMouse();
                 var point1 = e.GetPosition(Area);
 
