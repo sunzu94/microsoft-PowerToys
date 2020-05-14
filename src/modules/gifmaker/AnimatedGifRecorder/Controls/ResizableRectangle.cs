@@ -186,7 +186,7 @@ namespace AnimatedGifRecorder.Controls
             try
             {
                 var line = (Line)sender;
-                line.CaptureMouse(e.Pointer);
+                line.CaptureMouse();
                 lastPosition = e.GetPosition(this);
                 IsSelected = true;
 
@@ -203,12 +203,12 @@ namespace AnimatedGifRecorder.Controls
             }
         }
 
-        private void Line_MouseMove(object sender, MouseButtonEventArgs e)
+        private void Line_MouseMove(object sender, MouseEventArgs e)
         {
             try
             {
                 var ptrPoint = e.GetPosition(this);
-                if (ptrPoint.Properties.IsLeftButtonPressed)
+                if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     var line = (Line)sender;
                     var position = ptrPoint;
@@ -285,7 +285,7 @@ namespace AnimatedGifRecorder.Controls
             try
             {
                 var rect = (Rectangle)sender;
-                rect.CaptureMouse(e.Pointer);
+                rect.CaptureMouse();
                 e.Handled = true;
             }
             catch (Exception)
@@ -293,12 +293,12 @@ namespace AnimatedGifRecorder.Controls
             }
         }
 
-        private void Rect_MouseMove(object sender, MouseButtonEventArgs e)
+        private void Rect_MouseMove(object sender, MouseEventArgs e)
         {
             try
             {
                 var ptrPoint = e.GetPosition(this);
-                if (ptrPoint.Properties.IsLeftButtonPressed)
+                if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     var rect = (Rectangle)sender;
                     var position = ptrPoint;

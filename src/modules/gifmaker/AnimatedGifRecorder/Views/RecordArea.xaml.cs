@@ -1,6 +1,7 @@
 ﻿using AnimatedGifRecorder.Controls;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,13 +33,13 @@ namespace AnimatedGifRecorder.Views
         {
             try
             {
-                Area.CaptureMouse(e.Pointer);
-                var ptrPoint = e.GetPosition(Area);
-                var point1 = ptrPoint.Position;
+                Area.CaptureMouse();
+                var point1 = e.GetPosition(Area);
 
-                Area.Children.OfType<ResizableRectangle>()
-                    .ToList()
-                    .ForEach(r => r.IsSelected = false);
+                if (rect != null)
+                {
+                    Area.Children.Remove(rect);
+                }
 
                 rect = new ResizableRectangle(Area, point1);
                 Area.Children.Add(rect);
@@ -47,6 +48,7 @@ namespace AnimatedGifRecorder.Views
             }
             catch (Exception)
             {
+                Debug.WriteLine("canvas mouse down error");
             }
         }
 
@@ -54,18 +56,18 @@ namespace AnimatedGifRecorder.Views
         {
             try
             {
-                var ptrPoint = e.GetPosition(Area);
-                if (ptrPoint.Properties.IsLeftButtonPressed)
+                var point2 = e.GetPosition(Area);
+                if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     if (rect != null)
                     {
-                        var point2 = ptrPoint.Position;
                         rect.SetCoordinates(point2);
                     }
                 }
             }
             catch (Exception)
             {
+                Debug.WriteLine("canvas mouse move error");
             }
         }
 
@@ -78,14 +80,14 @@ namespace AnimatedGifRecorder.Views
                 if (rect.IsZeroSize())
                 {
                     Area.Children.Remove(rect);
+                    rect = null;
                 }
-
-                rect = null;
 
                 e.Handled = true;
             }
             catch (Exception)
             {
+                Debug.WriteLine("canvas mouse up error");
             }
         }
     }
