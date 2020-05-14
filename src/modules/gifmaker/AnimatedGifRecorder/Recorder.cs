@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.IO.Packaging;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using AnimatedGifRecorder.Encoders;
@@ -200,7 +201,7 @@ namespace AnimatedGifRecorder
             frame.Image?.Save(frame.Path);
             frame.Image?.Dispose();
             frame.Image = null;
-            Debug.WriteLine($"File saved in {frame.Path}");
+            Debug.WriteLine($"Frame {++_iter} captured!");
 
             Frames.Add(frame);
         }
@@ -335,7 +336,7 @@ namespace AnimatedGifRecorder
         private int _trueBottom => _conf.Y + _offsetTop + _conf.Height;
         private int _interval => (int)(1000 / _conf.FrameRate);
 
-        private string _filepath => $"test{DateTime.Now:yyyy-MM-dd}";
+        private string _filepath => $"test{DateTime.Now:yyyy-MM-ddThh_mm_ss}";
         private string _filename => $"{System.IO.Path.GetTempPath()}{_filepath}";
 
         /// <summary>
@@ -350,6 +351,8 @@ namespace AnimatedGifRecorder
 
         private bool _recording;
         private bool _stopped;
+
+        private int _iter;
         
         #endregion
     }
