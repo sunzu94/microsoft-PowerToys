@@ -27,6 +27,8 @@ namespace AnimatedGifRecorder.Views
         public RecordArea()
         {
             InitializeComponent();
+            recording = false;
+            UpdateUI();
         }
 
         private ResizableRectangle rect;
@@ -49,12 +51,12 @@ namespace AnimatedGifRecorder.Views
         {
             if (!recording)
             {
-                rect.Visibility = Visibility.Visible;
+                Area.Visibility = Visibility.Visible;
                 ExclusionPath.Visibility = Visibility.Collapsed;
             } 
             else
             {
-                rect.Visibility = Visibility.Collapsed;
+                Area.Visibility = Visibility.Collapsed;
                 ExclusionPath.Visibility = Visibility.Visible;
             }
 
@@ -64,7 +66,6 @@ namespace AnimatedGifRecorder.Views
         {
             try
             {
-                Exclusion.Rect = new Rect();
                 Area.CaptureMouse();
                 var point1 = e.GetPosition(Area);
 
@@ -73,7 +74,7 @@ namespace AnimatedGifRecorder.Views
                     Area.Children.Remove(rect);
                 }
 
-                rect = new ResizableRectangle( point1);
+                rect = new ResizableRectangle(point1);
                 Area.Children.Add(rect);
 
                 e.Handled = true;
@@ -115,6 +116,7 @@ namespace AnimatedGifRecorder.Views
                     rect = null;
                 }
 
+                Exclusion.Rect = new Rect(rect.Point1, rect.Point2);
                 e.Handled = true;
             }
             catch (Exception)

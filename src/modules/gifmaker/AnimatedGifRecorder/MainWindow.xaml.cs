@@ -35,6 +35,8 @@ namespace AnimatedGifRecorder
         {
             RecordAreaElement.Recording = false;
             recorder.Stop();
+
+            Close();
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
