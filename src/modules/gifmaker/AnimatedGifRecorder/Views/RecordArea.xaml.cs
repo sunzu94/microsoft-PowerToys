@@ -41,7 +41,7 @@ namespace AnimatedGifRecorder.Views
                     Area.Children.Remove(rect);
                 }
 
-                rect = new ResizableRectangle(Area, point1);
+                rect = new ResizableRectangle( point1);
                 Area.Children.Add(rect);
 
                 e.Handled = true;
