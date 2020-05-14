@@ -288,55 +288,55 @@ namespace AnimatedGifRecorder
         /// <summary>
         /// The current device being duplicated.
         /// </summary>
-        protected internal Device Device;
+        private Device Device;
 
         /// <summary>
         /// The desktop duplication interface.
         /// </summary>
-        protected internal OutputDuplication DuplicatedOutput;
+        private OutputDuplication DuplicatedOutput;
 
         /// <summary>
         /// The texture used to copy the pixel data from the desktop to the destination image. 
         /// </summary>
-        protected internal Texture2D StagingTexture;
+        private Texture2D StagingTexture;
 
         /// <summary>
         /// Texture used to merge the cursor with the background image (desktop).
         /// </summary>
-        protected internal Texture2D CursorStagingTexture;
+        private Texture2D CursorStagingTexture;
 
         /// <summary>
         /// The buffer that holds all pixel data of the cursor.
         /// </summary>
-        protected internal byte[] CursorShapeBuffer;
+        private byte[] CursorShapeBuffer;
 
         /// <summary>
         /// The details of the cursor.
         /// </summary>
-        protected internal OutputDuplicatePointerShapeInformation CursorShapeInfo;
+        private OutputDuplicatePointerShapeInformation CursorShapeInfo;
 
         /// <summary>
         /// The previous position of the mouse cursor.
         /// </summary>
-        protected internal OutputDuplicatePointerPosition PreviousPosition;
+        private OutputDuplicatePointerPosition PreviousPosition;
 
         /// <summary>
         /// Summary current recording session configurations
         /// </summary>
-        protected internal RecorderConf Conf;
+        private RecorderConf Conf;
 
-        protected internal int OffsetLeft { get; set; }
-        protected internal int OffsetTop { get; set; }
-        protected internal int TrueLeft => Conf.X + OffsetLeft;
-        protected internal int TrueRight => Conf.X + OffsetLeft + Conf.Width;
-        protected internal int TrueTop => Conf.Y + OffsetTop;
-        protected internal int TrueBottom => Conf.Y + OffsetTop + Conf.Height;
-        protected internal int Interval => (int)(1000 / Conf.FrameRate);
+        private int OffsetLeft { get; set; }
+        private int OffsetTop { get; set; }
+        private int TrueLeft => Conf.X + OffsetLeft;
+        private int TrueRight => Conf.X + OffsetLeft + Conf.Width;
+        private int TrueTop => Conf.Y + OffsetTop;
+        private int TrueBottom => Conf.Y + OffsetTop + Conf.Height;
+        private int Interval => (int)(1000 / Conf.FrameRate);
 
         /// <summary>
         /// The latest time in which a frame or metadata was captured.
         /// </summary>
-        protected internal long LastProcessTime = 0;
+        private long LastProcessTime = 0;
 
         /// <summary>
         /// Number of frames recorded
@@ -346,7 +346,7 @@ namespace AnimatedGifRecorder
         /// <summary>
         /// Collection of frame metadata in the current session
         /// </summary>
-        protected internal List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
+        private List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
 
         /// <summary>
         /// Frames in recording. 
