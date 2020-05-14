@@ -346,7 +346,7 @@ namespace AnimatedGifRecorder
         /// <summary>
         /// Collection of frame metadata in the current session
         /// </summary>
-        private List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
+        public List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
 
         /// <summary>
         /// Frames in recording. 
