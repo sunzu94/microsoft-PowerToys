@@ -335,6 +335,6 @@ namespace AnimatedGifRecorder
         #region states
         private bool _recording;
         private bool _stopped;
-        #region
+        #endregion
     }
 }
