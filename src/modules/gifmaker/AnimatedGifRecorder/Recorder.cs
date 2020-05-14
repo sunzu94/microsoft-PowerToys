@@ -330,7 +330,7 @@ namespace AnimatedGifRecorder
         /// Frames in recording. 
         /// Using BlockingCollection for multithreaded saving.
         /// </summary>
-        private BlockingCollection<FrameInfo> BlockingCollection { get; private set; } = new BlockingCollection<FrameInfo>();
+        private BlockingCollection<FrameInfo> BlockingCollection = new BlockingCollection<FrameInfo>();
 
         #region states
         private bool _recording;
