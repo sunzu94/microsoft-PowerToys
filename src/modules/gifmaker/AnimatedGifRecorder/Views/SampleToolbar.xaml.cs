@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AnimatedGifRecorder.Views
 {
@@ -27,15 +16,15 @@ namespace AnimatedGifRecorder.Views
             ImageUri = imageRecord;
         }
 
-        private string imageRecord = "pack://application:,,,/Resources/media-record.png";
-        private string imagePause = "pack://application:,,,/Resources/media-pause.png";
+        private readonly string imageRecord = "pack://application:,,,/Resources/media-record.png";
+        private readonly string imagePause = "pack://application:,,,/Resources/media-pause.png";
 
         public static readonly DependencyProperty ImageUriProperty = DependencyProperty.Register("ImageUri", typeof(string), typeof(SampleToolbar));
 
         public string ImageUri
         {
-            get { return (string)GetValue(ImageUriProperty); }
-            set { SetValue(ImageUriProperty, value); }
+            get => (string)GetValue(ImageUriProperty);
+            set => SetValue(ImageUriProperty, value);
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
