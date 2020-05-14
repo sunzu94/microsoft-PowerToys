@@ -11,10 +11,10 @@
                 MouseLeftButtonDown="Area_MouseLeftButtonDown"
                 MouseMove="Area_MouseMove"
                 MouseLeftButtonUp="Area_MouseLeftButtonUp">
-            <Canvas.Background>
-                <SolidColorBrush Opacity="0.5" Color="Black"/>
-            </Canvas.Background>
-        </Canvas>
+                    <Canvas.Background>
+                        <SolidColorBrush Opacity="0.5" Color="Black"/>
+                    </Canvas.Background>
+                </Canvas>
         <Path Fill="Black" 
               Opacity="0.5" 
               x:Name="ExclusionPath">

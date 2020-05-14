@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +50,8 @@ namespace AnimatedGifRecorder
             
             if (ToolbarElement.RecordPauseText.Text == "Pause")
             {
+                RecordAreaElement.Recording = true;
+             
                 RecordAreaElement.IsEnabled = false;
 
                 var p1 = RecordAreaElement.GetFirstPoint();
@@ -68,7 +71,6 @@ namespace AnimatedGifRecorder
                     FrameRate = 10
                 });
 
-                RecordAreaElement.Recording = true;
                 recorder.Start();
             } else
             {

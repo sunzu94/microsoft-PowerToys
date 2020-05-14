@@ -145,7 +145,7 @@ namespace AnimatedGifRecorder
         {
             _stopped = true;
             _tasks.ForEach(task => task.Wait());
-            GifEncoder.Encode(Frames, _filename + ".gif");
+            GifEncoder.Encode(Frames, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + $"\\{_filepath}.gif");
         }
 
         public void Pause()
@@ -335,7 +335,8 @@ namespace AnimatedGifRecorder
         private int _trueBottom => _conf.Y + _offsetTop + _conf.Height;
         private int _interval => (int)(1000 / _conf.FrameRate);
 
-        private string _filename => $"{System.IO.Path.GetTempPath()}test{DateTime.Now:yyyy-MM-dd}";
+        private string _filepath => $"test{DateTime.Now:yyyy-MM-dd}";
+        private string _filename => $"{System.IO.Path.GetTempPath()}{_filepath}";
 
         /// <summary>
         /// Frames in recording. 
