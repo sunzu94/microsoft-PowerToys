@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using AnimatedGifRecorder.Encoders;
 using AnimatedGifRecorder.Properties;
 
 using SharpDX;
@@ -138,6 +139,7 @@ namespace AnimatedGifRecorder
         public void Stop()
         {
             _stopped = true;
+            GifEncoder.Encode(Frames, _filename + ".gif");
         }
 
         public void Pause()
@@ -255,7 +257,7 @@ namespace AnimatedGifRecorder
                 bitmap.UnlockBits(mapDest);
 
                 //Set frame details.
-                frame.Path = $"{System.IO.Path.GetTempPath()}\\test_{FrameCount++}.png";
+                frame.Path = $"{_filename}_{FrameCount++}.png";
                 frame.Delay = _interval;
                 frame.Image = bitmap;
                 BlockingCollection.Add(frame);
@@ -326,6 +328,8 @@ namespace AnimatedGifRecorder
         private int _trueTop => _conf.Y + _offsetTop;
         private int _trueBottom => _conf.Y + _offsetTop + _conf.Height;
         private int _interval => (int)(1000 / _conf.FrameRate);
+
+        private string _filename => $"{System.IO.Path.GetTempPath()}\\test";
 
         /// <summary>
         /// Frames in recording. 
