@@ -80,7 +80,7 @@ namespace AnimatedGifRecorder
                 var Y = (int)Math.Min(p1.Y, p2.Y);
                 var Height = (int)Math.Max(p1.Y, p2.Y) - Y;
 
-                recorder = new Recorder(new RecorderConf
+                recorder = Recorder.GetInstance(new RecorderConf
                 {
                     X = X,
                     Y = Y,

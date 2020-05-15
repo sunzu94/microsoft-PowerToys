@@ -39,9 +39,19 @@ namespace AnimatedGifRecorder
         /// </summary>
         public List<FrameInfo> Frames { get; private set; } = new List<FrameInfo>();
 
+        private static Recorder recorder;
 
-        public Recorder(RecorderConf conf)
+        public static Recorder GetInstance(RecorderConf conf)
         {
+            if (recorder == null) recorder = new Recorder(conf);
+            return recorder;
+        }
+
+        private Recorder(RecorderConf conf)
+        {
+            if (!started) started = true;
+            else return;
+
             _conf = conf;
             _blockingCollection = new BlockingCollection<FrameInfo>();
             _tasks = new List<Task>();
@@ -352,7 +362,7 @@ namespace AnimatedGifRecorder
         private bool _recording;
         private bool _stopped;
 
-        private int _iter;
+        private bool started;
         
         #endregion
     }
