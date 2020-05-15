@@ -137,7 +137,7 @@ namespace AnimatedGifRecorder
                 }
             }));
 
-            Task.Run(async () =>
+            _tasks.Add(Task.Run(async () =>
             {
                 while(true)
                 {
@@ -148,7 +148,7 @@ namespace AnimatedGifRecorder
                     if (_stopped) return;
                     await Task.Delay(_interval);
                 }
-            });
+            }));
         }
 
 

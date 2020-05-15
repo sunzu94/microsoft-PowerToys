@@ -44,7 +44,18 @@ namespace AnimatedGifRecorder
         {
             RecordAreaElement.Recording = false;
 
+            this.Visibility = Visibility.Collapsed;
+
             var notificationManager = new NotificationManager();
+
+
+            notificationManager.Show(new NotificationContent
+            {
+                Title = "Saving your GIF",
+                Message = "We'll let you know when your GIF has been fully encoded.",
+                Type = NotificationType.Information,
+            }, "", TimeSpan.FromSeconds(10), null, () => Application.Current.Shutdown());
+
 
             await recorder.Stop();
 
