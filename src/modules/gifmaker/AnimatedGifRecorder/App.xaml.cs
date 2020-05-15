@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using AnimatedGifRecorder.ViewModels;
+using Notifications.Wpf;
 
 namespace AnimatedGifRecorder
 {
@@ -17,11 +18,10 @@ namespace AnimatedGifRecorder
         
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
-            var _mainWindow = new MainWindow();
-            var _mainViewModel= new MainViewModel();
-            _mainWindow.DataContext = _mainViewModel;
-            _mainWindow.Show();
+            var mainViewModel = new MainViewModel();
+            var mainWindow = new MainWindow();
+            mainWindow.DataContext = mainViewModel;
+            mainWindow.Show();
         }
 
         /// <summary>

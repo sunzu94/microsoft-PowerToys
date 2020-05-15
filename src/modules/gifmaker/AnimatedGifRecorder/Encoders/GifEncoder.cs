@@ -19,8 +19,8 @@ namespace AnimatedGifRecorder.Encoders
         /// <summary>
         /// Takes a sequence of frameinfos and merges them into a single GIF
         /// </summary>
-        /// <param name="frames"></param>
-        /// <param name="filePath"></param>
+        /// <param name="frames">metadata of frames to be added in GIF</param>
+        /// <param name="filePath">Final path destination</param>
         public static void Encode(List<FrameInfo> frames, string filePath)
         {
             FileStream fileOut = new FileStream(filePath, FileMode.Create);
@@ -33,12 +33,18 @@ namespace AnimatedGifRecorder.Encoders
                 PngBitmapDecoder decoder = new PngBitmapDecoder(imageStreamSource, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
                 BitmapSource bitmapSource = decoder.Frames[0];
 
+                // TODO: add individiual frame delay
                 encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
             }
 
             encoder.Save(fileOut);
             fileOut.Close();
             Debug.WriteLine($"File successfully saved!");
+        }
+
+        public static Task EncodeAsync(List<FrameInfo> frames, string filePath)
+        {
+            return Task.Run(() => Encode(frames, filePath));
         }
     }
 }

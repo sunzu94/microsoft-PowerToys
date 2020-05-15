@@ -127,7 +127,7 @@ namespace AnimatedGifRecorder
                 }
             }));
 
-            _tasks.Add(Task.Run(async () =>
+            Task.Run(async () =>
             {
                 while(true)
                 {
@@ -138,15 +138,16 @@ namespace AnimatedGifRecorder
                     if (_stopped) return;
                     await Task.Delay(_interval);
                 }
-            }));
+            });
         }
 
 
-        public void Stop()
+        public async void Stop()
         {
             _stopped = true;
-            _tasks.ForEach(task => task.Wait());
-            GifEncoder.Encode(Frames, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + $"\\{_filepath}.gif");
+            await Task.Factory.ContinueWhenAll(_tasks.ToArray(), alltasks => 
+            GifEncoder.Encode(Frames, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + $"\\{_filepath}.gif"));
+           
         }
 
         public void Pause()

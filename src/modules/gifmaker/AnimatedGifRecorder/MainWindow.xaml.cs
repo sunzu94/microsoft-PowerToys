@@ -45,8 +45,7 @@ namespace AnimatedGifRecorder
                 Title = "GIF images saved!",
                 Message = "Your GIF has been saved to your Pictures folder. Click here to trim or edit your GIF.",
                 Type = NotificationType.Information,
-            }, "", TimeSpan.FromSeconds(10), null, () =>
-            System.Windows.Application.Current.Shutdown());
+            }, "", TimeSpan.FromSeconds(10), null, () => Application.Current.Shutdown());
 
             Close();
         }
@@ -79,7 +78,7 @@ namespace AnimatedGifRecorder
                     Y = Y,
                     Width = Width,
                     Height = Height,
-                    FrameRate = 10
+                    FrameRate = 15
                 });
 
                 recorder.Start();
