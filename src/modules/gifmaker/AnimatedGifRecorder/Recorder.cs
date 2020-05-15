@@ -142,11 +142,11 @@ namespace AnimatedGifRecorder
         }
 
 
-        public async void Stop()
+        public Task Stop()
         {
             _stopped = true;
-            await Task.Factory.ContinueWhenAll(_tasks.ToArray(), alltasks => 
-            GifEncoder.Encode(Frames, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + $"\\{_filepath}.gif"));
+            return Task.Factory.ContinueWhenAll(_tasks.ToArray(), alltasks => 
+                GifEncoder.Encode(Frames, Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + $"\\{_filepath}.gif"));
            
         }
 

@@ -27,19 +27,26 @@ namespace AnimatedGifRecorder
         {
             InitializeComponent();
             KeyDown += CloseOnEsc;
+            Deactivated += MainWindow_Deactivated;
 
             ToolbarElement.CaptureButton.Click += CaptureButton_Click;
             ToolbarElement.RecordPauseButton.Click += RecordPauseButton_Click;
             ToolbarElement.StopButton.Click += StopButton_Click;
         }
 
-        private void StopButton_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_Deactivated(object sender, EventArgs e)
+        {
+            Window window = (Window)sender;
+            window.Topmost = true;
+        }
+
+        private async void StopButton_Click(object sender, RoutedEventArgs e)
         {
             RecordAreaElement.Recording = false;
 
             var notificationManager = new NotificationManager();
 
-            recorder.Stop();
+            await recorder.Stop();
 
             notificationManager.Show(new NotificationContent
             {
