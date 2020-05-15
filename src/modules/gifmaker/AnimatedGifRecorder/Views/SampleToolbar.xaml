@@ -30,7 +30,7 @@
                 </StackPanel>
             </Button>
             <GridSplitter ResizeDirection="Columns" Grid.Column="2" Height="Auto" Width="8"/>
-            <Border Background="WhiteSmoke" BorderBrush="DarkGray" BorderThickness="3">
+            <Border Background="WhiteSmoke" BorderThickness="0">
                 <TextBlock Name="StopwatchText" Text="00:00:00" VerticalAlignment="Center" Padding="5"/>
             </Border>
         </StackPanel>
