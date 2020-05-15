@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace AnimatedGifRecorder.Views
 {
@@ -15,6 +18,8 @@ namespace AnimatedGifRecorder.Views
             InitializeComponent();
             DataContext = this;
             ImageUri = imageRecord;
+            dt.Tick += new EventHandler(dt_Tick);
+            dt.Interval = new TimeSpan(0, 0, 0, 0, 1);
         }
 
         private readonly string imageRecord = "pack://application:,,,/Resources/media-record.png";
@@ -26,6 +31,21 @@ namespace AnimatedGifRecorder.Views
         {
             get => (string)GetValue(ImageUriProperty);
             set => SetValue(ImageUriProperty, value);
+        }
+
+        private readonly DispatcherTimer dt = new DispatcherTimer();
+        private readonly Stopwatch sw = new Stopwatch();
+        private string currentTime = string.Empty;
+
+        private void dt_Tick(object sender, EventArgs e)
+        {
+            if (sw.IsRunning)
+            {
+                TimeSpan ts = sw.Elapsed;
+                currentTime = string.Format("{0:00}:{1:00}:{2:00}",
+                ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                StopwatchText.Text = currentTime;
+            }
         }
 
         private void CaptureButton_Click(object sender, RoutedEventArgs e)
@@ -43,12 +63,18 @@ namespace AnimatedGifRecorder.Views
         {
             if (RecordPauseText.Text == "Record")
             {
+                sw.Start();
+                dt.Start();
                 ImageUri = imagePause;
                 RecordPauseText.Text = "Pause";
                 StopButton.IsEnabled = true;
             }
             else
             {
+                if (sw.IsRunning)
+                {
+                    sw.Stop();
+                }
                 ImageUri = imageRecord;
                 RecordPauseText.Text = "Record";
             }
@@ -56,6 +82,12 @@ namespace AnimatedGifRecorder.Views
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
+            if (sw.IsRunning)
+            {
+                sw.Stop();
+            }
+            sw.Reset();
+            StopwatchText.Text = "00:00:00";
             RecordPauseButton.IsEnabled = false;
             StopButton.IsEnabled = false;
             if (RecordPauseText.Text == "Pause")
