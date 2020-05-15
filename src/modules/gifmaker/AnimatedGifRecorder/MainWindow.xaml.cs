@@ -36,15 +36,16 @@ namespace AnimatedGifRecorder
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             RecordAreaElement.Recording = false;
-            recorder.Stop();
 
             var notificationManager = new NotificationManager();
+
+            recorder.Stop();
 
             notificationManager.Show(new NotificationContent
             {
                 Title = "GIF images saved!",
                 Message = "Your GIF has been saved to your Pictures folder. Click here to trim or edit your GIF.",
-                Type = NotificationType.Information,
+                Type = NotificationType.Success,
             }, "", TimeSpan.FromSeconds(10), null, () => Application.Current.Shutdown());
 
             Close();
