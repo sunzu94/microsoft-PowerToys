@@ -201,7 +201,6 @@ namespace AnimatedGifRecorder
             frame.Image?.Save(frame.Path);
             frame.Image?.Dispose();
             frame.Image = null;
-            Debug.WriteLine($"Frame {++_iter} captured!");
 
             Frames.Add(frame);
         }

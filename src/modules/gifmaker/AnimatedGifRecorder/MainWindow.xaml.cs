@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Notifications.Wpf;
 
 namespace AnimatedGifRecorder
 {
@@ -36,6 +37,16 @@ namespace AnimatedGifRecorder
         {
             RecordAreaElement.Recording = false;
             recorder.Stop();
+
+            var notificationManager = new NotificationManager();
+
+            notificationManager.Show(new NotificationContent
+            {
+                Title = "GIF images saved!",
+                Message = "Your GIF has been saved to your Pictures folder. Click here to trim or edit your GIF.",
+                Type = NotificationType.Information,
+            }, "", TimeSpan.FromSeconds(10), null, () =>
+            System.Windows.Application.Current.Shutdown());
 
             Close();
         }
@@ -72,7 +83,8 @@ namespace AnimatedGifRecorder
                 });
 
                 recorder.Start();
-            } else
+            }
+            else
             {
                 RecordAreaElement.Recording = false;
                 recorder.Pause();
