@@ -29,12 +29,13 @@ namespace AnimatedGifRecorder.Views
             InitializeComponent();
             recording = false;
             UpdateUI();
+
         }
 
-        private ResizableRectangle rect;
+        private ResizableRectangle targetArea;
 
-        public Point GetFirstPoint() => rect.Point1;
-        public Point GetSecondPoint() => rect.Point2;
+        public Point GetFirstPoint() => targetArea.Point1;
+        public Point GetSecondPoint() => targetArea.Point2;
 
         public bool Recording
         {
@@ -69,13 +70,13 @@ namespace AnimatedGifRecorder.Views
                 Area.CaptureMouse();
                 var point1 = e.GetPosition(Area);
 
-                if (rect != null)
+                if (targetArea != null)
                 {
-                    Area.Children.Remove(rect);
+                    Area.Children.Remove(targetArea);
                 }
 
-                rect = new ResizableRectangle(point1);
-                Area.Children.Add(rect);
+                targetArea = new ResizableRectangle(point1);
+                Area.Children.Add(targetArea);
 
                 e.Handled = true;
             }
@@ -92,9 +93,9 @@ namespace AnimatedGifRecorder.Views
                 var point2 = e.GetPosition(Area);
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
-                    if (rect != null)
+                    if (targetArea != null)
                     {
-                        rect.SetCoordinates(point2);
+                        targetArea.SetCoordinates(point2);
                     }
                 }
             }
@@ -110,13 +111,13 @@ namespace AnimatedGifRecorder.Views
             {
                 Area.ReleaseMouseCapture();
 
-                if (rect.IsZeroSize())
+                if (targetArea.IsZeroSize())
                 {
-                    Area.Children.Remove(rect);
-                    rect = null;
+                    Area.Children.Remove(targetArea);
+                    targetArea = null;
                 }
 
-                Exclusion.Rect = new Rect(rect.Point1, rect.Point2);
+                Exclusion.Rect = new Rect(targetArea.Point1, targetArea.Point2);
                 e.Handled = true;
             }
             catch (Exception)

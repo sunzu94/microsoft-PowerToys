@@ -20,12 +20,13 @@ namespace AnimatedGifRecorder
         public int Delay;
 
         /// <summary>
-        /// Path to bitmap
+        /// Path to saved image file
         /// </summary>
         public string Path;
 
         /// <summary>
         /// Bitmap image
+        /// Will be disposed off once image is saved to path
         /// </summary>
         public Image Image;
     }
