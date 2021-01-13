@@ -6,7 +6,6 @@ using System;
 using System.ComponentModel;
 using System.Timers;
 using System.Windows;
-using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.PowerLauncher.Telemetry;
@@ -40,6 +39,12 @@ namespace PowerLauncher
 
             _firstDeleteTimer.Elapsed += CheckForFirstDelete;
             _firstDeleteTimer.Interval = 1000;
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            WindowsInteropHelper.SetPopupStyle(this);
         }
 
         private void CheckForFirstDelete(object sender, ElapsedEventArgs e)
