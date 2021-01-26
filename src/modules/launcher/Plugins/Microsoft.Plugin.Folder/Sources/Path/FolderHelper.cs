@@ -40,9 +40,8 @@ namespace Microsoft.Plugin.Folder.Sources
                 throw new ArgumentNullException(nameof(search));
             }
 
-            // Using Ordinal this is internal and we're comparing symbols
-            if (search.StartsWith(@"\\", StringComparison.Ordinal))
-            { // share folder
+            if (IsSharedFolder(search))
+            {
                 return true;
             }
 
@@ -69,6 +68,16 @@ namespace Microsoft.Plugin.Folder.Sources
             return false;
         }
 
+        public bool IsNetworkShare(string search)
+        {
+            if (search == null)
+            {
+                throw new ArgumentNullException(nameof(search));
+            }
+
+            return IsSharedFolder(search) && search.Trim('\\').Split('\\').Length == 1;
+        }
+
         /// <summary>
         /// This check is needed because char.IsLetter accepts more than [A-z]
         /// </summary>
@@ -91,6 +100,12 @@ namespace Microsoft.Plugin.Folder.Sources
             }
 
             return Environment.ExpandEnvironmentVariables(search);
+        }
+
+        private static bool IsSharedFolder(string search)
+        {
+            // Using Ordinal this is internal and we're comparing symbols
+            return search.StartsWith(@"\\", StringComparison.Ordinal);
         }
     }
 }

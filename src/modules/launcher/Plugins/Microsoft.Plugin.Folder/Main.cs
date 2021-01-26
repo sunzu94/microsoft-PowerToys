@@ -27,11 +27,13 @@ namespace Microsoft.Plugin.Folder
         private static readonly FolderSettings _settings = _storage.Load();
         private static readonly IQueryInternalDirectory _internalDirectory = new QueryInternalDirectory(_settings, new QueryFileSystemInfo(_fileSystem.DirectoryInfo), _fileSystem.Directory);
         private static readonly FolderHelper _folderHelper = new FolderHelper(new DriveInformation(), new FolderLinksSettings(_settings));
+        private static readonly IQueryNetworkShare _networkShare = new QueryNetworkShare();
 
         private static readonly ICollection<IFolderProcessor> _processors = new IFolderProcessor[]
         {
             new UserFolderProcessor(_folderHelper),
             new InternalDirectoryProcessor(_folderHelper, _internalDirectory),
+            new NetShareProcessor(_folderHelper, _networkShare),
         };
 
         private static PluginInitContext _context;
@@ -57,10 +59,11 @@ namespace Microsoft.Plugin.Folder
 
             var expandedName = FolderHelper.Expand(query.Search);
 
-            return _processors.SelectMany(processor => processor.Results(query.ActionKeyword, expandedName))
+            var result = _processors.SelectMany(processor => processor.Results(query.ActionKeyword, expandedName))
                 .Select(res => res.Create(_context.API))
                 .Select(AddScore)
                 .ToList();
+            return result;
         }
 
         public void Init(PluginInitContext context)

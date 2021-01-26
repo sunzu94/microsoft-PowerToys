@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Globalization;
+using Microsoft.Plugin.Folder.Helpers;
 using Wox.Infrastructure;
 using Wox.Plugin;
 
@@ -21,6 +22,15 @@ namespace Microsoft.Plugin.Folder.Sources.Result
             Title = fileSystemInfo.Name;
             Subtitle = fileSystemInfo.FullName;
             Path = fileSystemInfo.FullName;
+        }
+
+        public FolderItemResult(string host, SHARE_INFO_1 shareInfo)
+        {
+            var path = System.IO.Path.Combine(host, shareInfo.shi1_netname);
+
+            Title = shareInfo.shi1_netname;
+            Subtitle = path;
+            Path = path;
         }
 
         public string Title { get; set; }

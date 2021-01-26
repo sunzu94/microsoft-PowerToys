@@ -2,12 +2,13 @@
 // The Microsoft Corporation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
+using Microsoft.Plugin.Folder.Sources.Result;
+
 namespace Microsoft.Plugin.Folder.Sources
 {
-    public interface IFolderHelper
+    public interface IQueryNetworkShare
     {
-        bool IsDriveOrSharedFolder(string search);
-
-        bool IsNetworkShare(string search);
+        IEnumerable<IItemResult> Query(string search);
     }
 }
