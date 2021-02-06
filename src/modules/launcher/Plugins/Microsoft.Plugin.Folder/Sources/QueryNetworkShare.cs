@@ -21,9 +21,9 @@ namespace Microsoft.Plugin.Folder.Sources
                 throw new ArgumentNullException(nameof(search));
             }
 
-            search = search.TrimEnd('\\');
+            var host = @"\\" + search.Substring(2, search.Length - 2).Split('\\')[0];
 
-            var shares = EnumNetShares(search);
+            var shares = EnumNetShares(host);
 
             if (!shares.Any())
             {
@@ -32,7 +32,7 @@ namespace Microsoft.Plugin.Folder.Sources
 
             yield return new CreateOpenCurrentFolderResult(search);
 
-            var shareResult = BuildShareResult(search, shares);
+            var shareResult = BuildShareResult(search, host, shares);
 
             foreach (var result in shareResult)
             {
@@ -75,9 +75,11 @@ namespace Microsoft.Plugin.Folder.Sources
             return shareInfos;
         }
 
-        private static IEnumerable<FolderItemResult> BuildShareResult(string search, IEnumerable<SHARE_INFO_1> shares)
+        private static IEnumerable<FolderItemResult> BuildShareResult(string search, string host, IEnumerable<SHARE_INFO_1> shares)
         {
-            return shares.Select(s => new FolderItemResult(search, s)).OrderBy(s => s.Title);
+            return shares.Select(s => new FolderItemResult(host, s))
+                .Where(s => s.Path.StartsWith(search, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(s => s.Title);
         }
     }
 }

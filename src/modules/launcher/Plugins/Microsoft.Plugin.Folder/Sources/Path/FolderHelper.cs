@@ -75,7 +75,8 @@ namespace Microsoft.Plugin.Folder.Sources
                 throw new ArgumentNullException(nameof(search));
             }
 
-            return IsSharedFolder(search) && search.Trim('\\').Split('\\').Length == 1;
+            var levels = search.Trim('\\').Split('\\').Length;
+            return IsSharedFolder(search) && (levels == 1 || levels == 2);
         }
 
         /// <summary>
