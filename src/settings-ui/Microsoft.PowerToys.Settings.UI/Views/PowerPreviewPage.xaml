@@ -93,6 +93,12 @@
                           Margin="{StaticResource SmallTopMargin}"
                           IsOn="{Binding Mode=TwoWay, Path=SVGThumbnailIsEnabled}"
                           IsEnabled="{Binding Mode=OneWay, Path=IsElevated}"/>
+
+            <!--
+            <ToggleSwitch x:Uid="FileExplorerPreview_ToggleSwitch_Monaco_Toggle"
+                          Margin="{StaticResource SmallTopMargin}"
+                          IsOn="{Binding Mode=TwoWay, Path=SVGThumbnailIsEnabled}"
+                          IsEnabled="{Binding Mode=OneWay, Path=IsElevated}"/> -->
         </StackPanel>
         <RelativePanel x:Name="SidePanel" 
                     HorizontalAlignment="Left"
