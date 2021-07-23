@@ -1,6 +1,6 @@
 cd /D "%~dp0"
 
-nuget restore ../PowerToys.sln || exit /b 1
+nuget restore ../PowerToys.sln -MSBuildVersion 16.10 || exit /b 1
 
 powershell.exe -Command "Invoke-WebRequest -OutFile %tmp%\wdksetup.exe https://go.microsoft.com/fwlink/p/?linkid=2085767"
 %tmp%\wdksetup.exe /q
